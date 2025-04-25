@@ -9,6 +9,9 @@ import DashboardPage from "./routes/dashboardPage/DashboardPage.jsx";
 import HomePage from "./routes/homepage/Homepage.jsx";
 import SignInPage from "./routes/signIn/SignInPage.jsx";
 import SignUpPage from "./routes/signUp/SignUpPage.jsx";
+import RightClickMenu from "./routes/rightClickMenu/RightClickMenu.jsx";
+import { Provider } from "react-redux";
+import store from "./redux/store/store.js";
 
 const router = createBrowserRouter([
   {
@@ -39,12 +42,18 @@ const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: "/test/chats",
+        element: <RightClickMenu />,
+      },
     ],
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 );

@@ -10,5 +10,40 @@
   .content {
     flex: 4;
     background-color: #12101b;
+    padding: 20px 30px;
+  }
+}
+
+/* Mobile device */
+@media screen and (max-width: 576px) {
+}
+
+@media screen and (max-width: 768px) {
+  .dashboardLayout {
+    .content {
+      .wrapper {
+        .chat {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 992px) {
+
+}
+
+@media screen and (max-width: 1200px) {
+  .dashboardLayout {
+    gap: 0px;
+    .content {
+      padding: 10px 20px;
+      .wrapper {
+        .chat {
+          width: 100%;
+        }
+      }
+    }
   }
 }

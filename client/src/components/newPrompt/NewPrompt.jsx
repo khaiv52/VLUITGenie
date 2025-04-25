@@ -77,7 +77,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
         .invalidateQueries({ queryKey: ["chat", data._id] })
         .then(() => {
           setInputMessage(""); // Reset dữ liệu người dùng nhập (Input Form)
-          setLatestUserMessage(""); // Reset lời nhắn của người dùng - 
+          setLatestUserMessage(""); // Reset lời nhắn của người dùng
           // tránh trường hợp bị lỗi khi gửi ảnh mà vẫn còn input message đã gửi là text trước đó
           setMessages([]); // Reset messages
           setImg({ isLoading: false, error: "", dbData: {}, aiData: {} }); // Reset ảnh
@@ -128,7 +128,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
 
         setShouldSendToServer(true); // flag để kích hoạt mutation trong useEffect
 
-        // Nếu là message đầu, bỏ qua và không lưu câu hỏi của user, ngược lại thì lưu message để mutation
+        // Nếu là message đầu, bỏ qua và không lưu câu hỏi của user, ngược lại thì lưu message để mutation (vì câu hỏi đã được post lúc đâu rồi)
         if (!isInitialMessage) {
           setLatestUserMessage(message); // lưu message lại để gửi lên server sau
         }
@@ -147,23 +147,13 @@ function NewPrompt({ endRef, data, setIsTyping }) {
     setRows(Math.min(7, Math.max(1, lineBreaks))); // Giới hạn từ 1 đến 7 dòng
   };
 
-  // Xử lý dữ liệu ảnh ngay sau khi người dùng gửi để nhầm lưu db
-  // useEffect(() => {
-  //   if (img?.dbData) return; // nếu đã có ảnh thì không làm gì
-
-  //   // Tìm phần tử đầu tiên do user gửi có fileData
-  //   const firstImageMessage = messages.find(
-  //     (m) => m.authorId === "user" && m.payload?.block?.fileData
-  //   );
-
-  //   if (firstImageMessage) {
-  //     setImg({
-  //       dbData: firstImageMessage.payload.block.fileData,
-  //     });
-  //   }
-  // }, [img, messages]);
-
   useEffect(() => {
+    console.log("useEffect running with:", {
+      shouldSendToServer,
+      messages,
+      latestUserMessage,
+      data,
+    });
     if (!shouldSendToServer) return;
 
     const lastBotMsg = messages
@@ -171,7 +161,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
       .reverse()
       .find((m) => m.authorId !== "user");
 
-    if (lastBotMsg) {
+    if (lastBotMsg && data?._id) {
       const botText =
         lastBotMsg?.payload?.block?.text ||
         lastBotMsg?.payload?.blocks?.[0]?.block?.text ||
@@ -278,7 +268,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
       })} */}
 
       {/* Hiển thị ảnh */}
-      {img.isLoading && <div className="">Đang tải...</div>}
+      {/* {img.isLoading && <div className="">Đang tải...</div>}
       {img.dbData?.filePath && (
         <IKImage
           urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
@@ -286,7 +276,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
           width="380"
           transformation={[{ width: "380", height: "auto" }]}
         />
-      )}
+      )} */}
       <div className="endChat" ref={endRef}>
         <div
           className="newPrompt"

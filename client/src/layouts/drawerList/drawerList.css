@@ -1,0 +1,32 @@
+.drawerList {
+  background-color: black;
+  height: 100vh;
+  padding: 10px;
+  color: white;
+  max-width: 300px;
+  overflow: hidden;
+
+  .ChatList {
+    .dashBoardLink {
+      border-radius: 6px;
+      padding: 7px 7px;
+      font-size: 14px;
+      text-wrap: wrap;
+      font-weight: 400;
+    }
+  }
+
+  .title {
+    padding: 0 7px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .list {
+    .listMenu {
+      padding: 10px 7px;
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+}

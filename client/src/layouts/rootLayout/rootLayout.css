@@ -3,6 +3,8 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 
 header {
@@ -13,8 +15,11 @@ header {
   .logo {
     display: flex;
     gap: 8px;
-    font: bold;
     align-items: center;
+
+    span {
+      font-weight: bold;
+    }
 
     img {
       width: 50px;
@@ -24,6 +29,9 @@ header {
 }
 
 .user {
+  display: flex;
+  align-items: center;
+
   .signInButton {
     display: inline-block;
     padding: 10px 20px;
@@ -35,7 +43,7 @@ header {
     border-radius: 12px; /* Bo góc */
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease; 
+    transition: all 0.3s ease;
 
     &:hover {
       background-color: #d0d0d0;
@@ -47,4 +55,65 @@ header {
 main {
   flex: 1;
   overflow: hidden;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media screen and (max-width: 1200px) {
+  .rootLayout {
+    padding: 16px 28px;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .rootLayout {
+    padding: 16px 28px;
+  }
+
+  header {
+    .logo {
+      font-size: 14px !important;
+    }
+
+    .user {
+      .signInButton {
+        font-size: 14px !important;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .rootLayout {
+    padding: 16px 28px;
+  }
+
+  header {
+    .logo {
+      font-size: 14px !important;
+    }
+
+    .user {
+      .signInButton {
+        font-size: 14px !important;
+      }
+    }
+  }
+
+  .group-control {
+    display: flex;
+
+    .mobile-only {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .rootLayout {
+    padding: 16px 28px;
+  }
 }

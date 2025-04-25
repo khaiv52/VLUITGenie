@@ -68,7 +68,7 @@ app.post("/api/chats", requireAuth(), async (req, res) => {
         chats: [
           {
             _id: savedChat._id,
-            title: text.substring(0, 40) + "...",
+            title: text.substring(0, 30) + "...",
           },
         ],
       });
@@ -156,6 +156,31 @@ app.put("/api/chats/:id", requireAuth(), async (req, res) => {
     res.status(200).send(updatedChat);
   } catch (error) {
     console.error("Error updating chat:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.delete("/api/chats/:id", requireAuth(), async (req, res) => {
+  const { userId } = getAuth(req);
+  const chatId = req.params.id;
+
+  try {
+    const deleteChat = await chat.deleteOne({ _id: chatId, userId });
+
+    if (deleteChat.deletedCount === 0) {
+      return res
+        .status(400)
+        .json({ message: "Chat not found or unauthorized" });
+    }
+
+    // Xóa chat trong mảng `userChats.chats`
+    await userChats.updateOne(
+      { userId },
+      { $pull: { chats: { _id: chatId } } }
+    );
+    res.status(200).json({ message: "chat deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting chat");
     res.status(500).send("Internal Server Error");
   }
 });

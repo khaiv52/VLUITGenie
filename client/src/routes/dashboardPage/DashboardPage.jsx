@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./dashboardPage.css";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 function DashboardPage() {
   const queryClient = useQueryClient();
+
+  // Biến tăng dòng cho textarea
+  const [rows, setRows] = useState(1);
+  const [inputMessage, setInputMessage] = useState("");
 
   const navigate = useNavigate();
   const mutation = useMutation({
@@ -20,7 +24,7 @@ function DashboardPage() {
     // server response trả về id của chat mới tạo
     onSuccess: (id) => {
       console.log(id);
-      
+
       queryClient.invalidateQueries({ queryKey: ["userChats"] });
       navigate(`/dashboard/chats/${id}`);
     },
@@ -28,12 +32,53 @@ function DashboardPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const text = e.target.text.value;
+    const text = inputMessage;
     if (!text) return;
 
     mutation.mutate(text); // Gọi hàm mutate với text
+
+    const textarea = e.target;
+
+    if (textarea) {
+      textarea.style.height = "auto";
+    }
   };
-  
+
+  // Xử lý sự kiện nhấn Enter
+  const handleKeyDown = (event) => {
+    const textarea = event.target;
+
+    if (event.key === "Enter") {
+      if (event.shiftKey) {
+        event.preventDefault(); // Chặn hành vi mặc định để tránh xuống 2 dòng
+        setInputMessage((prev) => prev + "\n"); // Nhấn shift thì Xuống dòng đúng 1 lần
+        textarea.style.height = textarea.scrollHeight + "px"; // Tăng chiều cao khi nhấn enter cho text area
+      } else {
+        event.preventDefault(); // Chặn hành vi xuống dòng mặc định
+
+        mutation.mutate(inputMessage);
+        textarea.style.height = "auto"; // reset chiều cao
+      }
+    }
+  };
+
+  const handleChange = (event) => {
+    setInputMessage(event.target.value);
+
+    const lineBreaks = event.target.value.split("\n").length;
+    setRows(Math.min(7, Math.max(1, lineBreaks))); // Giới hạn từ 1 đến 7 dòng
+  };
+
+  useEffect(() => {
+    if (inputMessage.trim() === "") {
+      setRows(1);
+      const textarea = document.querySelector("textarea");
+      if (textarea) {
+        textarea.style.height = "auto";
+      }
+    }
+  }, [inputMessage]);
+
   return (
     <div className="dashboardPage">
       <div className="texts">
@@ -54,7 +99,22 @@ function DashboardPage() {
       </div>
       <div className="formContainer">
         <form onSubmit={handleSubmit}>
-          <input name="text" type="text" placeholder="Hỏi bất kỳ điều gì..."></input>
+          <div className="area">
+            <textarea
+              type="text"
+              name="text"
+              placeholder="Hỏi bất kỳ điều gì..."
+              onKeyDown={handleKeyDown}
+              onChange={handleChange}
+              value={inputMessage}
+              rows={rows}
+            ></textarea>
+          </div>
+          {/* <input
+            name="text"
+            type="text"
+            placeholder="Hỏi bất kỳ điều gì..."
+          ></input> */}
           <button>
             <img src="/arrow.png" alt=""></img>
           </button>

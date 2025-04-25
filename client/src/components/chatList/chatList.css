@@ -4,6 +4,26 @@
   height: 100%;
   padding: 10px;
 
+  .title {
+    padding: 10px 7px;
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .dashBoardLink {
+    padding: 10px 7px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .dashBoardLink:hover {
+    background-color: #2c2937;
+  }
+
   hr {
     border: none;
     height: 2px;
@@ -18,7 +38,32 @@
     flex-direction: column;
     overflow-y: auto;
     max-height: 400px;
+    max-width: 250px;
     padding-right: 5px;
+
+    .listMenu {
+      padding: 10px 7px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        background-color: #2c2937;
+      }
+
+      a {
+        /* padding: 10px; */
+        white-space: nowrap; /* không xuống dòng */
+        text-overflow: ellipsis; /* hiện dấu "..." */
+        max-width: 100%;
+        overflow: hidden;
+        border-radius: 6px;
+      }
+
+      a.active {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+    }
   }
 
   .list::-webkit-scrollbar {
@@ -35,21 +80,6 @@
   }
 
   .list:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(164, 125, 125, 0.4);
   }
-
-  a {
-    padding: 10px;
-    border-radius: 10px;
-
-    &:hover {
-      background-color: #2c2937;
-    }
-  }
-}
-
-.title {
-  font-weight: 600;
-  font-size: 12px;
-  margin-bottom: 10px;
 }

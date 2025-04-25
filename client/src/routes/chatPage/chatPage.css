@@ -19,6 +19,7 @@
       gap: 20px;
 
       .message {
+        padding: 0px 20px;
         p,
         li {
           margin: 10px 0px;

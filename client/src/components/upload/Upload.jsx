@@ -27,7 +27,6 @@ function Upload({
   setImg,
   isConnected,
   client,
-  setMessages,
   setShouldSendToServer,
 }) {
   const ikUploadRef = useRef(null);
@@ -39,13 +38,13 @@ function Upload({
     console.log("Success", res);
     setImg((prev) => ({ ...prev, isLoading: false, dbData: res }));
 
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        payload: { block: { fileData: res.filePath } },
-        authorId: "user",
-      },
-    ]);
+    // setMessages((prevMessages) => [
+    //   ...prevMessages,
+    //   {
+    //     payload: { block: { fileData: res.filePath } },
+    //     authorId: "user",
+    //   },
+    // ]);
 
     // Trigger mutation sau khi upload ảnh thành công
     setShouldSendToServer(true);

@@ -77,3 +77,24 @@
     }
   }
 }
+
+/* Mobile device */
+@media screen and (max-width: 576px) {
+  
+}
+
+@media screen and (max-width: 768px) {
+}
+
+
+@media screen and (max-width: 1200px) {
+  .endChat {
+    .newPrompt {
+      width: 100%;
+
+      .newForm {
+        width: 100%;
+      }
+    }
+  }
+}

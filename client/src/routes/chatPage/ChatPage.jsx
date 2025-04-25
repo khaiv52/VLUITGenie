@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import Markdown from "react-markdown";
 import { useQuery } from "@tanstack/react-query";
 import { IKImage } from "imagekitio-react";
+import DrawerList from "../../layouts/drawerList/DrawerList";
 
 function ChatPage() {
   const path = useLocation().pathname;
@@ -32,7 +33,7 @@ function ChatPage() {
         }),
   });
 
-  // console.log(data);
+  console.log(data);
 
   // Xư lý sự kiện cuộn (hiển thị nút)
   const chatRef = useRef(null);
@@ -71,6 +72,8 @@ function ChatPage() {
         <div className="chat">
           {isPending
             ? "Loading..."
+            : !data
+            ? "Chưa có cuộc trò chuyện nào"
             : error
             ? "Có lỗi xảy ra"
             : data?.history?.map((message, i) => (
@@ -96,7 +99,6 @@ function ChatPage() {
                   </div>
                 </React.Fragment>
               ))}
-
           {/* Khi bot đang gõ - hiển thị typing indicator */}
           {isTyping && (
             <div className="message">

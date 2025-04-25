@@ -55,15 +55,16 @@ function HomePage() {
               speed={50}
               repeat={Infinity}
               cursor={true}
-              style={{ fontSize: "1.3rem", color: "white" }}
+              style={{ color: "white" }}
               omitDeletionAnimation={true}
             />
           </div>
         </div>
       </div>
-      <div className="footer">
+      {/* <div className="footer">
         <p>@ 2025 | VLUITGenie Team</p>
-      </div>
+        
+      </div> */}
     </div>
   );
 }

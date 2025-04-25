@@ -14,6 +14,18 @@ body {
 }
 
 a {
-    text-decoration: none;
-    color: inherit;
+  text-decoration: none;
+  color: inherit;
 }
+
+@media screen and (max-width: 768px) {
+  .body {
+    padding: 16px 28px;
+    scrollbar-width: none !important; /* Ẩn thanh scroll dọc */
+  }
+
+  .body::-webkit-scrollbar {
+    display: none !important;
+  }
+}
+
