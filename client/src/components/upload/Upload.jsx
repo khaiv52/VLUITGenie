@@ -28,6 +28,7 @@ function Upload({
   isConnected,
   client,
   setShouldSendToServer,
+  setIsTyping,
 }) {
   const ikUploadRef = useRef(null);
   const onError = (err) => {
@@ -60,6 +61,7 @@ function Upload({
     if (file) {
       try {
         const response = await client.sendFile(file);
+        setIsTyping(true);
 
         if (response && response.fileUrl) {
           console.log("File sent successfully:", response);

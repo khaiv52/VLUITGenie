@@ -299,6 +299,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
               <Upload
                 setImg={setImg}
                 setMessages={setMessages}
+                setIsTyping={setIsTyping}
                 isConnected={isConnected}
                 client={client}
                 data={data}

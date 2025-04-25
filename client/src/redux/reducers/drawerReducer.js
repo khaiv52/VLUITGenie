@@ -1,5 +1,6 @@
 const initialState = {
   open: false,
+  isTyping: false,
 };
 
 const drawerReducer = (state = initialState, action) => {
@@ -8,6 +9,8 @@ const drawerReducer = (state = initialState, action) => {
       return { ...state, open: !state.open };
     case "SET_DRAWER":
       return { ...state, open: action.payload };
+    // case "SET_IS_TYPING":
+    //   return { ...state, isTyping: action.payload };
     default:
       return state;
   }

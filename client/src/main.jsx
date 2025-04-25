@@ -12,6 +12,7 @@ import SignUpPage from "./routes/signUp/SignUpPage.jsx";
 import RightClickMenu from "./routes/rightClickMenu/RightClickMenu.jsx";
 import { Provider } from "react-redux";
 import store from "./redux/store/store.js";
+import TestTheme from "./components/testTheme/TestTheme.jsx";
 
 const router = createBrowserRouter([
   {
@@ -43,8 +44,8 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/test/chats",
-        element: <RightClickMenu />,
+        path: "/test/theme",
+        element: <TestTheme />,
       },
     ],
   },

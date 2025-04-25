@@ -29,3 +29,30 @@ a {
   }
 }
 
+/* Dark Theme */
+/* Theme Light - updated with better shades */
+[class*="theme-light"] .theme-light\:bg-white-900 {
+  background-color: #f5f5f5 !important; /* rất nhẹ, gần trắng */
+}
+
+[class*="theme-light"] .theme-light\:text-black {
+  color: #1f2937 !important; /* gần như đen, dùng trong Tailwind cho readable dark text */
+}
+
+[class*="theme-light"] .theme-light\:bg-white-800 {
+  background-color: #e5e7eb !important; /* xám nhạt (Tailwind gray-200) */
+}
+
+/* THEME DARK */
+[class*="theme-dark"] .theme-dark\:bg-gray-900 {
+  background-color: #111827 !important;
+}
+[class*="theme-dark"] .theme-dark\:text-white {
+  color: white !important;
+}
+[class*="theme-dark"] .theme-dark\:bg-gray-800 {
+  background-color: #1f2937 !important;
+}
+[class*="theme-dark"] .theme-dark\:text-gray-900 {
+  color: #111827 !important;
+}

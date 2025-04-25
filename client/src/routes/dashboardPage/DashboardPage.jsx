@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./dashboardPage.css";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 function DashboardPage() {
   const queryClient = useQueryClient();
 
@@ -89,11 +89,15 @@ function DashboardPage() {
         <div className="options">
           <div className="option">
             <img src="/chat.png" alt=""></img>
-            <span>Create A New Chat</span>
+            <span>
+              <Link to="/" className="dashBoardLink">
+                Tạo hội thoại mới
+              </Link>
+            </span>
           </div>
           <div className="option">
             <img src="/image.png" alt=""></img>
-            <span>Analyze Images</span>
+            <span>Phân tích hình ảnh</span>
           </div>
         </div>
       </div>

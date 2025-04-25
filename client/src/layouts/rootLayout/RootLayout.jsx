@@ -46,7 +46,7 @@ function RootLayout() {
         <div className="rootLayout">
           <header>
             <Link to="/" className="logo">
-              <img src="./logoVLU.png" alt="" />
+              <img src="./logoVLU.png" alt="" loading="lazy" />
               <span>VLUITGenie</span>
             </Link>
             <div className="group-control">
