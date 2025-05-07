@@ -4,6 +4,7 @@ const cors = require("cors");
 const { default: mongoose } = require("mongoose");
 const chat = require("./models/chat");
 const userChats = require("./models/userChats");
+const user = require("./models/users");
 const { clerkClient, requireAuth, getAuth } = require("@clerk/express");
 
 const port = process.env.PORT || 3000;

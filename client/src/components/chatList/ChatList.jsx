@@ -36,7 +36,7 @@ function ChatList() {
         Tạo cuộc trò chuyện mới
       </Link>
       <Link to="/" className="dashBoardLink" onClick={closeDrawer}>
-        Khám phá trò chuyện với VLUITGenie
+        Khám phá VLUITGenie
       </Link>
       <hr />
       <span className="title">CUỘC TRÒ CHUYỆN GẦN ĐÂY</span>{" "}

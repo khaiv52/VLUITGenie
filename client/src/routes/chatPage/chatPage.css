@@ -71,7 +71,47 @@
       background: white;
       border-radius: 50%;
       color: black;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px); /* Đặt trạng thái ban đầu */
       transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    }
+
+    .scrollButton.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0); /* Trạng thái sau khi hiển thị */
+      animation: fadeIn 0.3s ease; /* Áp dụng animation */
+    }
+
+    .scrollButton.hide {
+      opacity: 0;
+      visibility: visible;
+      transform: translateY(20px); /* Trạng thái sau khi ẩn */
+      animation: fadeOut 0.3s ease; /* Áp dụng animation */
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      
     }
 
     .scrollButton:hover {

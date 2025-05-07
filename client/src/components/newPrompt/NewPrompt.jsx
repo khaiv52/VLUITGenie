@@ -221,19 +221,21 @@ function NewPrompt({ endRef, data, setIsTyping }) {
     }
   }, [inputMessage]);
 
-  // Nếu người dùng nhập vào đoạn chat lần đầu, thì gửi đoạn chat từ db lên để bot response và lưu vào database
-  const [hasSentInitialMessage, setHasSentInitialMessage] = useState(false);
-
+  // Kiểm tra nếu trạng thái đã được lưu trong localStorage
+  const hassentMessage = localStorage.getItem(
+    `hasSentInitialMessage_${data?._id}`
+  );
   useEffect(() => {
     // Log dữ liệu data để kiểm tra xem nó đã có giá trị hợp lệ chưa
     console.log("data:", data);
 
     // Kiểm tra nếu chưa gửi tin nhắn ban đầu và dữ liệu đã sẵn sàng
     if (
-      !hasSentInitialMessage &&
+      !hassentMessage &&
       isConnected &&
       client &&
       data?.history?.length > 0 &&
+      data.history.length < 3 && // Chỉ gửi nếu lịch sử có 2 mục hoặc ít hơn
       data.history[0].parts?.[0]?.text
     ) {
       const inputMessage = data.history[0].parts[0].text;
@@ -244,10 +246,10 @@ function NewPrompt({ endRef, data, setIsTyping }) {
       sendMessage(inputMessage, isInitialMessage);
       setIsTyping(true);
 
-      // Đánh dấu đã gửi tin nhắn ban đầu
-      setHasSentInitialMessage(true);
+      // Đánh dấu đã gửi tin nhắn ban đầu và lưu vào localStorage
+      localStorage.setItem(`hasSentInitialMessage_${data?._id}`, "true");
     }
-  }, [isConnected, client, data?.history, hasSentInitialMessage]);
+  }, [isConnected, client, data?.history, hassentMessage]);
 
   return (
     <>

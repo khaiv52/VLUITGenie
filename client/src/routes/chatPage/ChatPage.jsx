@@ -113,11 +113,12 @@ function ChatPage() {
           )}
         </div>
 
-        {showScrollButton && (
-          <button className={`scrollButton`} onClick={scrollToBottom}>
-            <ArrowDownwardRounded fontSize="medium" />
-          </button>
-        )}
+        <button
+          className={`scrollButton ${showScrollButton ? "show" : "hide"}`}
+          onClick={scrollToBottom}
+        >
+          <ArrowDownwardRounded fontSize="medium" />
+        </button>
       </div>
     </div>
   );

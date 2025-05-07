@@ -86,7 +86,7 @@ function DashboardPage() {
           <img src="/logoVLU.png" alt=""></img>
           <h1>VLUITGenie</h1>
         </div>
-        <div className="options">
+        {/* <div className="options">
           <div className="option">
             <img src="/chat.png" alt=""></img>
             <span>
@@ -99,7 +99,7 @@ function DashboardPage() {
             <img src="/image.png" alt=""></img>
             <span>Phân tích hình ảnh</span>
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="formContainer">
         <form onSubmit={handleSubmit}>
