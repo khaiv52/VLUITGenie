@@ -76,7 +76,7 @@ function RootLayout() {
               <div className="user">
                 {/* Hiển thị SignInButton nếu chưa đăng nhập */}
                 <SignedOut>
-                  <SignInButton mode="modal" redirectUrl="/dashboard">
+                  <SignInButton mode="modal" redirectUrl="/dashboard/chats">
                     <p className="signInButton">Đăng nhập</p>
                   </SignInButton>
                 </SignedOut>

@@ -32,7 +32,7 @@ function ChatList() {
   return (
     <div className="ChatList">
       {!isMobile && <span className="title">BẢNG ĐIỀU KHIỂN</span>}
-      <Link to="/dashboard" className="dashBoardLink" onClick={closeDrawer}>
+      <Link to="/dashboard/chats" className="dashBoardLink" onClick={closeDrawer}>
         Tạo cuộc trò chuyện mới
       </Link>
       <Link to="/" className="dashBoardLink" onClick={closeDrawer}>

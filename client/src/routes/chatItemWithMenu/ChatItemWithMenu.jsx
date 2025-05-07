@@ -51,25 +51,34 @@ function ChatItemWithMenu({ chat, isActive, onSelect }) {
     onSuccess: async () => {
       // Lấy danh sách mới sau khi xóa thành công
       console.log("Xóa thành công! Tải lại danh sách...");
+      navigate("/dashboard/chats"); // Điều hướng ngay lập tức về trang tạo chat mới
       queryClient.invalidateQueries({ queryKey: ["userChats"] });
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}`, {
-          credentials: "include",
-        });
+      // try {
+      //   const res = await fetch(
+      //     `${import.meta.env.VITE_API_URL}/api/userchats`,
+      //     {
+      //       credentials: "include",
+      //     }
+      //   );
 
-        if (!res.ok) throw new Error("Không thể lấy danh sách chat");
+      //   if (!res.ok) throw new Error("Không thể lấy danh sách chat");
 
-        const userChats = res.json();
-        const chats = userChats.chats;
-        const lastChat = chats[chats.length - 1];
+      //   const userChats = res.json();
+      //   const chats = userChats.chats;
+      //   const lastChat = chats[chats.length - 1];
 
-        if (lastChat) {
-          console.log("Chuyển tới đoạn chat cuối: ", lastChat._id);
-          navigate(`/dashboard/chats/${lastChat._id}`);
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách chat: ", error.message);
-      }
+      //   if (userChats.chats.length == 0) {
+      //     console.log(
+      //       "Không còn chat nào trong danh sách. Điều hướng về trang tạo chat mới."
+      //     );
+      //     navigate("/dashboard/chats"); // Chuyển tới trang tạo chat mới
+      //   } else {
+      //     console.log("Chuyển tới đoạn chat cuối: ", lastChat._id);
+      //     navigate(`/dashboard/chats/${lastChat._id}`); // Điều hướng tới đoạn chat cuối
+      //   }
+      // } catch (error) {
+      //   console.error("Lỗi khi lấy danh sách chat: ", error.message);
+      // }
     },
     onError: (error) => {
       console.error("Lỗi khi xóa!", error.message);

@@ -25,7 +25,7 @@ function HomePage() {
           học bổng, học phí và cơ hội nghề nghiệp một cách nhanh chóng và chính
           xác.
         </h3>
-        <Link to="/dashboard">Bắt đầu chat</Link>
+        <Link to="/dashboard/chats">Bắt đầu chat</Link>
         {/* <button onClick={test}>BACKEND TEST</button> */}
       </div>
       <div className="right">

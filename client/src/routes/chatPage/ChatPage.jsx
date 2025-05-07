@@ -1,16 +1,16 @@
 import { ArrowDownwardRounded } from "@mui/icons-material";
-import React, { useEffect, useRef, useState } from "react";
-import NewPrompt from "../../components/newPrompt/NewPrompt";
-import "./chatPage.css";
-import { useLocation } from "react-router-dom";
-import Markdown from "react-markdown";
 import { useQuery } from "@tanstack/react-query";
 import { IKImage } from "imagekitio-react";
-import DrawerList from "../../layouts/drawerList/DrawerList";
+import React, { useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
+import { useLocation, useNavigate } from "react-router-dom";
+import NewPrompt from "../../components/newPrompt/NewPrompt";
+import "./chatPage.css";
 
 function ChatPage() {
   const path = useLocation().pathname;
   const chatId = path.split("/").pop(); // Lấy id từ đường dẫn
+  const navigate = useNavigate();  // Sử dụng useNavigate để điều hướng
 
   // Tạo trạng thái gõ của chatbot
   const [isTyping, setIsTyping] = useState(false);
@@ -65,6 +65,17 @@ function ChatPage() {
       setIsTyping(false);
     }
   }, [data]);
+
+  // Nếu không còn tin nhắn nào (userchats bị xóa) thin điều hướng về trang tạo chat mới
+  // useEffect(() => {
+  //   console.log("Data:", data); // Kiểm tra dữ liệu
+  //   if (!data) {
+  //     console.log(
+  //       "Không còn cuộc trò chuyện nào. Điều hướng về trang tạo mới."
+  //     );
+  //     navigate("/dashboard/chats"); // Điều hướng về trang tạo chat mới
+  //   }
+  // }, [data]);
 
   return (
     <div className="chatPage">
