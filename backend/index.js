@@ -6,19 +6,21 @@ const chat = require("./models/chat");
 const userChats = require("./models/userChats");
 const user = require("./models/users");
 const { clerkClient, requireAuth, getAuth } = require("@clerk/express");
+const removeVietnameseTones = require("./utils/removeTones");
 
 const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL, // Địa chỉ frontend
     // credentials trong CORS: Cho phép backend chấp nhận cookie
     // hoặc thông tin xác thực từ client.
     credentials: true,
   })
 );
 
+// Middleware để phân tích dữ liệu JSON trong yêu cầu
 app.use(express.json());
 
 const connect = async () => {
@@ -36,17 +38,19 @@ const imagekit = new ImageKit({
   privateKey: process.env.IMAGE_KIT_PRIVATE_KEY,
 });
 
+// Kiểm tra kết nối API của ImageKit
 app.get("/api/upload", (req, res) => {
-  const result = imagekit.getAuthenticationParameters();
+  const result = imagekit.getAuthenticationParameters(); // Lấy thông tin xác thực
   res.send(result);
 });
 
-app.get("/api/test", requireAuth(), (req, res) => {
-  const { userId } = getAuth(req);
-  console.log(userId);
-  res.send("Success");
-});
+// app.get("/api/test", requireAuth(), (req, res) => {
+//   const { userId } = getAuth(req);
+//   console.log(userId);
+//   res.send("Success");
+// });
 
+// Thêm đoạn chat mới vào cơ sở dữ liệu
 app.post("/api/chats", requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
   const { text } = req.body;
@@ -57,7 +61,7 @@ app.post("/api/chats", requireAuth(), async (req, res) => {
       history: [{ role: "user", parts: [{ text }] }],
     });
 
-    const savedChat = await newChat.save();
+    const savedChat = await newChat.save(); // Lưu chat vào cơ sở dữ liệu
 
     // Kiểm tra chat của người dùng đã tồn tại hay chưa
     const existingUserChats = await userChats.find({ userId: userId });
@@ -73,7 +77,7 @@ app.post("/api/chats", requireAuth(), async (req, res) => {
           },
         ],
       });
-      await newUserChats.save();
+      await newUserChats.save(); // Lưu danh sách chat của người dùng
     } else {
       // Nếu chat của người dùng đang tồn tại, thêm chat mới vào danh sách
       await userChats.updateOne(
@@ -95,12 +99,14 @@ app.post("/api/chats", requireAuth(), async (req, res) => {
   }
 });
 
+// Lấy danh sách chat của người dùng
 app.get("/api/userchats", requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
   try {
     const existingUserChats = await userChats.find({ userId: userId });
     if (!existingUserChats) {
-      return res.status(404).send("User chats not found");
+      // Không có bản ghi, trả về mảng rỗng
+      return res.status(200).json([]);
     }
     res.status(200).send(existingUserChats[0].chats);
     console.log(existingUserChats[0].chats);
@@ -110,6 +116,7 @@ app.get("/api/userchats", requireAuth(), async (req, res) => {
   }
 });
 
+// Lấy chat theo ID
 app.get("/api/chats/:id", requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
   try {
@@ -125,6 +132,7 @@ app.get("/api/chats/:id", requireAuth(), async (req, res) => {
   }
 });
 
+// Cập nhật chat theo ID
 app.put("/api/chats/:id", requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
 
@@ -161,6 +169,7 @@ app.put("/api/chats/:id", requireAuth(), async (req, res) => {
   }
 });
 
+// Xóa chat theo ID
 app.delete("/api/chats/:id", requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
   const chatId = req.params.id;
@@ -183,6 +192,69 @@ app.delete("/api/chats/:id", requireAuth(), async (req, res) => {
   } catch (error) {
     console.error("Error deleting chat");
     res.status(500).send("Internal Server Error");
+  }
+});
+
+// Tìm kiếm danh sách chat dựa tên từ khóa người dùng nhập
+app.get("/api/userchats/search", requireAuth(), async (req, res) => {
+  console.log("==> /api/userchats/search called");
+  const { userId } = getAuth(req);
+  const { keyword } = req.query;
+  const normalizeKeyword = removeVietnameseTones(keyword.trim());
+
+  console.log("userId:", userId, "keyword:", keyword);
+
+  try {
+    const [userChatsDoc, chatsDoc] = await Promise.all([
+      userChats.findOne({ userId }),
+      // console.log("userchats:", userchats),
+      chat.find({
+        userId,
+        "history.parts.text": { $regex: normalizeKeyword, $options: "i" },
+      }),
+    ]);
+
+    if (!userChatsDoc) return res.json([]);
+
+    // Tìm theo title - userChats (không phân biệt chữ hoa chữ thường + không dấu)
+    const titleMatches = userChatsDoc.chats.filter((chat) =>
+      removeVietnameseTones(chat.title).includes(normalizeKeyword)
+    );
+
+    // Tìm theo parts.text bảng chat
+    const matchChatIds = new Set();
+    for (const chat of chatsDoc) {
+      for (const message of chat.history) {
+        for (const part of message.parts) {
+          if (
+            part.text &&
+            removeVietnameseTones(part.text).includes(normalizeKeyword)
+          ) {
+            matchChatIds.add(chat._id.toString());
+            break;
+          }
+        }
+      }
+    }
+
+    // Gộp kết quả: các chat trong userChats có _id trùng với chat từ nội dung
+    const contentMatches = userChatsDoc.chats.filter((chat) =>
+      matchChatIds.has(chat._id.toString())
+    );
+
+    // Gộp cả titleMatches và contentMatches (loại bỏ trùng nhau)
+    const finalResultMap = new Map();
+    [...titleMatches, ...contentMatches].forEach((chat) => {
+      finalResultMap.set(chat._id, chat);
+    });
+
+    const finalResult = Array.from(finalResultMap.values());
+
+    console.log("Kết quả tìm:", finalResult);
+    res.json(finalResult); // Trả về danh sách chat tìm thấy
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error"); // Trả về lỗi 500 nếu có lỗi xảy ra
   }
 });
 

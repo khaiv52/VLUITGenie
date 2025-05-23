@@ -5,6 +5,8 @@ import ChatList from "../../components/chatList/ChatList";
 import { useMediaQuery } from "@mui/material";
 
 import "./dashboardLayout.css";
+import { Search } from "@mui/icons-material";
+import ChatSearchDialog from "../../components/searchDialog/SearchDialog";
 
 function DashboardLayout() {
   const { userId, isLoaded } = useAuth();
@@ -32,6 +34,7 @@ function DashboardLayout() {
       <div className="content">
         <Outlet />
       </div>
+      <ChatSearchDialog />
     </div>
   );
 }

@@ -30,20 +30,22 @@
 
         &.user {
           padding: 20px;
-          background-color: #2c2937;
+          background-color: var(--chat-active-bg);
           border-radius: 15px;
           max-width: 80%;
           align-self: end;
         }
 
         a {
+          max-width: 100%;
+          width: fit-content;
+          word-break: break-word;
           padding: 10px 10px;
           display: block;
           margin: 15px 0px;
-          background-color: #1e1c28;
-          width: fit-content;
+          background-color: var(--text-accent-bg);
           border-radius: 12px;
-          color: rgb(86, 143, 255);
+          color: var(--text-accent-color);
           transition: background 0.1s ease-in, color 0.1s ease-in;
         }
 
@@ -51,10 +53,10 @@
           padding: 10px 10px;
           display: block;
           margin: 15px 0px;
-          background-color: #474456;
+          background-color: var(--text-accent-hover-bg);
           width: fit-content;
           border-radius: 12px;
-          color: rgb(130, 168, 244);
+          color: var(--text-accent-hover-color);
         }
       }
     }
@@ -67,14 +69,24 @@
       right: 20px;
       width: 40px;
       height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border: none;
-      background: white;
+      background: var(--btn-bg);
       border-radius: 50%;
-      color: black;
+      color: var(--icon-color);
       opacity: 0;
       visibility: hidden;
       transform: translateY(20px); /* Đặt trạng thái ban đầu */
       transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+      
+      img {
+        width: 20px;
+        height: 20px;
+        filter: var(--invert-image);
+        transform: rotate(180deg);
+      }
     }
 
     .scrollButton.show {
@@ -111,7 +123,6 @@
         opacity: 0;
         transform: translateY(20px);
       }
-      
     }
 
     .scrollButton:hover {
@@ -136,10 +147,32 @@
   }
 
   .wrapper::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: var(--scroll-thumb);
     border-radius: 10px;
   }
   .wrapper::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: var(--scroll-thumb-hover);
+  }
+}
+
+/* Mobile device */
+@media screen and (max-width: 576px) {
+  .chatPage {
+    .wrapper {
+      .scrollButton {
+        width: 30px;
+        height: 30px;
+        bottom: 15px;
+        bottom: 110px;
+        right: auto;
+        transform: translate(-50%, 20px); /* Giữ hiệu ứng ẩn ban đầu */
+      }
+
+      img {
+        width: 20px;
+        height: 20px;
+        filter: var(--invert-image);
+      }
+    }
   }
 }

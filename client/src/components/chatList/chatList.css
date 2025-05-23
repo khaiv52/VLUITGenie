@@ -18,16 +18,20 @@
     align-items: center;
     overflow: hidden;
     white-space: nowrap;
+    color: var(--text-color);
+    /* background-color: var(--link-bg); */
+    margin-bottom: 5px;
   }
 
   .dashBoardLink:hover {
-    background-color: #1a1821;
+    /* background-color: #1a1821; */
+    background-color: var(--link-hover-bg);
   }
 
   hr {
     border: none;
     height: 2px;
-    background-color: #ddd;
+    background-color: var(--divider-color);
     opacity: 0.1;
     border-radius: 5px;
     margin: 20px 0px;
@@ -39,17 +43,21 @@
     overflow-y: auto;
     max-height: 400px;
     max-width: 250px;
-    padding-right: 5px;
+    padding: 0 7px;
 
     .listMenu {
       border-radius: 6px;
       display: flex;
       align-items: center;
-      
+      /* background-color: var(--link-bg); */
+      color: var(--text-color);
+      margin-bottom: 5px;
+
       &:hover {
-        background-color: #1a1821;
+        /* background-color: #1a1821; */
+        background-color: var(--link-hover-bg);
       }
-      
+
       a {
         /* padding: 10px; */
         padding: 10px 7px;
@@ -63,7 +71,8 @@
       }
 
       a.active {
-        background-color: #2c2937;
+        background-color: var(--chat-active-bg);
+        color: var(--text-color);
       }
     }
   }
@@ -77,11 +86,11 @@
   }
 
   .list::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: var(--scroll-thumb);
     border-radius: 10px;
   }
 
   .list:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(164, 125, 125, 0.4);
+    background-color: var(--scroll-thumb-hover);
   }
 }

@@ -1,0 +1,18 @@
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: var(--text-color);
+
+  &:hover {
+    background-color: var(--icon-hover-bg);
+    color: var(--icon-hover-color);
+  }
+  &:active {
+    background-color: var(--icon-active-bg);
+    color: var(--icon-active-color);
+  }
+}

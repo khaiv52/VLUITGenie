@@ -1,29 +1,41 @@
 .dashboardLayout {
   display: flex;
-  gap: 50px;
   padding-top: 20px;
   height: 100%;
+  overflow-x: hidden;
 
   .menu {
     flex: 1;
+    background-color: var(--bg-primary);
+    margin-right: 50px;
   }
   .content {
     flex: 4;
-    background-color: #12101b;
+    background-color: var(--bg-secondary);
     padding: 20px 30px;
   }
 }
 
 /* Mobile device */
 @media screen and (max-width: 576px) {
+  .dashboardLayout {
+    .content {
+      width: 100%;
+      padding: 0px;
+      .wrapper {
+
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 768px) {
   .dashboardLayout {
     .content {
+      padding: 10px 20px;
       .wrapper {
         .chat {
-          width: 100%;
+          width: 100% !important;
         }
       }
     }
@@ -31,14 +43,12 @@
 }
 
 @media screen and (max-width: 992px) {
-
 }
 
 @media screen and (max-width: 1200px) {
   .dashboardLayout {
     gap: 0px;
     .content {
-      padding: 10px 20px;
       .wrapper {
         .chat {
           width: 100%;

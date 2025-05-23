@@ -3,14 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { IKImage } from "imagekitio-react";
 import React, { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import NewPrompt from "../../components/newPrompt/NewPrompt";
 import "./chatPage.css";
+import ChatSearchDialog from "../../components/searchDialog/SearchDialog";
 
 function ChatPage() {
   const path = useLocation().pathname;
   const chatId = path.split("/").pop(); // Lấy id từ đường dẫn
-  const navigate = useNavigate();  // Sử dụng useNavigate để điều hướng
 
   // Tạo trạng thái gõ của chatbot
   const [isTyping, setIsTyping] = useState(false);
@@ -122,13 +122,15 @@ function ChatPage() {
           {data && (
             <NewPrompt endRef={endRef} data={data} setIsTyping={setIsTyping} />
           )}
+          <ChatSearchDialog />
         </div>
 
         <button
           className={`scrollButton ${showScrollButton ? "show" : "hide"}`}
           onClick={scrollToBottom}
         >
-          <ArrowDownwardRounded fontSize="medium" />
+          {/* <ArrowDownwardRounded fontSize="medium" /> */}
+          <img class="arrow_image" alt="" src="/arrow.png"></img>
         </button>
       </div>
     </div>

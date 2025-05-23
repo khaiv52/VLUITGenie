@@ -7,8 +7,8 @@
 }
 
 body {
-  background-color: #0c0c16;
-  color: #ececec;
+  background-color: var(--bg-primary);
+  color: var(--text-color);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
@@ -29,30 +29,134 @@ a {
   }
 }
 
-/* Dark Theme */
-/* Theme Light - updated with better shades */
-[class*="theme-light"] .theme-light\:bg-white-900 {
-  background-color: #f5f5f5 !important; /* rất nhẹ, gần trắng */
+:root {
+  --bg-primary: #fbf9f9; /* Nền chính */
+  --bg-secondary: #f7f7f9; /* nền phụ */
+  --bg-tertiary: #fdfdfd; /* Màu nền thứ ba nhẹ nhàng */
+  --bg-bot: #f0f0f4; /* Nền bot, có thể là màu nhấn nhẹ hơn nền chính */
+  --bg-chat-animation: #9e8fcf; /* Nền chat animation, có thể là màu nhấn nhẹ hơn nền chính */
+  --bg-dashboard: #faf6f6; /* Nền dashboard, có thể là màu nhấn nhẹ hơn nền chính */
+
+  --text-color: #1c1c1e; /* Màu chữ tối rõ ràng */
+  --divider-color: #d0d0d0; /* Đường phân cách trung tính */
+  --chat-active-bg: #e5e5f0; /* Màu nhấn nền nhẹ nhàng, tối hơn secondary để tạo phân biệt */
+  --scroll-thumb: rgba(0, 0, 0, 0.1);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.2);
+
+  --link-bg: #f0f0f4; /* Nền link nhẹ */
+  --link-hover-bg: #e5e5f0; /* Nền hover nhẹ */
+  --link-color: #1a73e8; /* Màu link nổi bật */
+  --link-hover-color: #1558b0; /* Màu hover đậm hơn */
+  --link-active-bg: #eaeaf4; /* Nền link khi active */
+
+  /* Màu accent cho theme sáng */
+  --text-accent-color: #2f80ed;
+  --text-accent-hover-color: #1b4eaa;
+  --text-accent-bg: #eef4ff;
+  --text-accent-hover-bg: #dce9ff;
+
+  --icon-color: #1c1c1e;
+  --icon-bg: #e4e8f5; /* sáng nhẹ nhưng có khối rõ */
+  --icon-hover-bg: #ced8f1; /* hover rõ ràng hơn, thiên xanh để đồng bộ với accent */
+  --icon-hover-color: #1a73e8; /* Màu icon hover nổi bật */
+  --icon-active-bg: #bfd2ff;
+  --icon-active-color: #1a73e8;
+
+  /* Màu cho input */
+  --text-input-color: #1c1c1e; /* Màu chữ trong input */
+
+  --btn-bg: #d5ddf5; /* Màu button nền nổi bật */
+  --btn-hover-bg: #c3d0f0; /* hover nâng cao độ nổi bật hơn */
+  --btn-hover-color: #7ab7ff;
+  --box-shadow: 0px 5px 15px rgba(73, 73, 73, 0.2);
+
+  --invert-image: invert(1) hue-rotate(0deg); /* Đảo ngược màu sắc hình ảnh */
+
+  /* Màu cho bảng dialog search */
+  --text-title-dialog-color: #4e4e54; /* Màu chữ tiêu đề trong dialog */
+  
+  --text-dialog-color: #59595e; /* Màu chữ trong dialog */
+  --text-dialog-hover-color: #1a73e8; /* Màu chữ hover trong dialog */
+  --text-dialog-active-color: #1a73e8; /* Màu chữ active trong dialog */
+  
+  --icon-dialog-color: #88888e; /* Màu icon trong dialog */
+  --icon-dialog-hover-color: #1a73e8; /* Màu icon hover trong dialog */
+  --icon-dialog-active-color: #1a73e8; /* Màu icon active trong dialog */
+
+  --divider-color: #eeeeee; /* Đường phân cách trung tính */
+
+  --scrollbar-track-color: #fbf9f9;
+  --scrollbar-thumb-color: #ababab;
+  --scrollbar-thumb-hover-color: #5c5c7a;
+
+  --fs-super-small: 0.8rem; /* 13px */
+  --fs-small: 0.875rem; /* 14px */
+  --fs-medium: 1rem; /* 16px */
+  --fs-large: 1.125rem; /* 18px */
+  --fs-xlarge: 1.25rem; /* 20px */
+
+  --fw-medium: 500; /* Độ đậm chữ trung bình */
+  --fw-large: 600; /* Độ đậm chữ lớn */
+  --fw-small: 400; /* Độ đậm chữ nhỏ */
 }
 
-[class*="theme-light"] .theme-light\:text-black {
-  color: #1f2937 !important; /* gần như đen, dùng trong Tailwind cho readable dark text */
+.dark-mode {
+  --bg-primary: #0c0c16;
+  --bg-secondary: #12101b;
+  --bg-tertiary: #2c2937;
+  --bg-bot: #140e2d;
+  --bg-chat-animation: #2c2937;
+  /* --bg-dashboard: #292a2f; Nền dashboard, có thể là màu nhấn nhẹ hơn nền chính */
+  --bg-dashboard: #29292f;
+
+  --text-color: #ffffff;
+  --divider-color: #ddd;
+  --chat-active-bg: #2c2937;
+  --scroll-thumb: rgba(255, 255, 255, 0.2);
+  --scroll-thumb-hover: rgba(164, 125, 125, 0.4);
+
+  --link-bg: #0c0c16;
+  --link-hover-bg: #1a1821;
+
+  --text-accent-color: #7ab7ff;
+  --text-accent-hover-color: #5e83b3;
+  --text-accent-bg: #191f24;
+  --text-accent-hover-bg: #181c23;
+
+  --icon-color: #ffffff;
+  --icon-bg: #2a2b34; /* nền trung tính, rõ khối nhưng không quá sáng */
+  --icon-hover-bg: #3a3c47; /* hover nâng cao độ nổi bật hơn */
+  --icon-hover-color: #7ab7ff;
+  --icon-active-bg: #445069;
+  --icon-active-color: #7ab7ff;
+
+  --btn-bg: #6d6b77; /* Màu button nền nổi bật */
+  --btn-hover-bg: #9c9aa5; /* hover nâng cao độ nổi bật hơn */
+
+  --text-input-color: #ececec; /* Màu chữ trong input */
+  --box-shadow: none;
+  --invert-image: invert(0) hue-rotate(0deg);
+
+  /* Màu cho bảng dialog search - cập nhật để đồng bộ dark mode */
+  --text-title-dialog-color: #e0e0e0; /* Màu tiêu đề sáng hơn */
+  --text-dialog-color: #cccccc; /* Màu chữ dialog nhẹ sáng hơn */
+  
+  --text-dialog-hover-color: #4f4f4f; /* Màu chữ hover trong dialog */
+  --text-dialog-active-color: #59595e; /* Màu chữ active trong dialog */
+  --text-dialog-hover-color: #7ab7ff; /* Nền chữ active trong dialog */
+  
+  --icon-dialog-color: #cccccc; /* Màu icon trung tính hơn và rõ nét */
+  --icon-dialog-active-color: #7ab7ff; /* Màu icon active trong dialog */
+  --icon-dialog-hover-color: #7ab7ff; /* Màu icon hover trong dialog */
+
+  --divider-color: #505050; /* Đường phân cách tối nhưng rõ */
+
+  --scrollbar-track-color: #2e2e31; /* Màu nền thanh cuộn phù hợp dark */
+  --scrollbar-thumb-color: #444; /* Thanh cuộn màu trung bình */
+  --scrollbar-thumb-hover-color: #666; /* Hover rõ hơn nhưng không quá sáng */
 }
 
-[class*="theme-light"] .theme-light\:bg-white-800 {
-  background-color: #e5e7eb !important; /* xám nhạt (Tailwind gray-200) */
-}
-
-/* THEME DARK */
-[class*="theme-dark"] .theme-dark\:bg-gray-900 {
-  background-color: #111827 !important;
-}
-[class*="theme-dark"] .theme-dark\:text-white {
-  color: white !important;
-}
-[class*="theme-dark"] .theme-dark\:bg-gray-800 {
-  background-color: #1f2937 !important;
-}
-[class*="theme-dark"] .theme-dark\:text-gray-900 {
-  color: #111827 !important;
+.dark-mode .dashboardPage .formContainer {
+  border: none;
+  box-shadow: none;
 }

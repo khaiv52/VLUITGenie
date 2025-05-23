@@ -321,7 +321,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
                   isConnected ? {} : { background: "rgba(117, 117, 117, 0.4)" }
                 }
               >
-                <img src="/arrow.png" alt=""></img>
+                <img className="arrow_image" src="/arrow.png" alt=""></img>
               </button>
             </div>
           </form>

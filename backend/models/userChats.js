@@ -17,8 +17,8 @@ const userChatSchema = new mongoose.Schema(
           required: true,
         },
         createdAt: {
-          type: String,
-          default: Date.now(),
+          type: Date,
+          default: Date.now,
         },
       },
     ],

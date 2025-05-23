@@ -50,6 +50,40 @@ header {
       color: #0c0c16;
     }
   }
+
+  .search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 16px;
+    color: var(--icon-color);
+    padding: 10px;
+
+    &:hover {
+      background-color: var(--icon-hover-bg);
+      color: var(--icon-hover-color);
+    }
+  }
+
+  .cl-rootBox {
+    padding: 10px;
+  }
+
+  /* Dashboard Icon - Mobile Only */
+  .dashboard-icon {
+    font-size: 20px;
+    color: var(--icon-color);
+    border: none;
+    width: 24px;
+    height: 24px;
+
+    &:hover {
+      background-color: var(--icon-hover-bg);
+      color: var(--icon-hover-color);
+      border: none;
+    }
+  }
 }
 
 main {
@@ -59,6 +93,10 @@ main {
 
 .mobile-only {
   display: none;
+}
+
+.desktop-only {
+  display: block;
 }
 
 @media screen and (max-width: 1200px) {
@@ -104,10 +142,15 @@ main {
 
   .group-control {
     display: flex;
+    align-items: center;
 
     .mobile-only {
       display: flex;
       align-items: center;
+    }
+    
+    .desktop-only {
+      display: none;
     }
   }
 }

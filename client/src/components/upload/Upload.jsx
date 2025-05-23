@@ -60,6 +60,7 @@ function Upload({
 
     if (file) {
       try {
+        // Gửi file đến server
         const response = await client.sendFile(file);
         setIsTyping(true);
 
@@ -93,7 +94,7 @@ function Upload({
       />
 
       <label
-        onClick={() => ikUploadRef.current.click()}
+        onClick={() => ikUploadRef.current.click()} // Mở hộp thoại chọn file dựa trên nhãn
         aria-disabled={!isConnected}
         style={isConnected ? {} : { background: "rgba(117, 117, 117, 0.4)" }}
       >

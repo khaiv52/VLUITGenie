@@ -12,7 +12,7 @@ import SignUpPage from "./routes/signUp/SignUpPage.jsx";
 import RightClickMenu from "./routes/rightClickMenu/RightClickMenu.jsx";
 import { Provider } from "react-redux";
 import store from "./redux/store/store.js";
-import TestTheme from "./components/testTheme/TestTheme.jsx";
+import SearchDialog from "./components/searchDialog/SearchDialog.jsx";
 
 const router = createBrowserRouter([
   {
@@ -43,10 +43,7 @@ const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: "/test/theme",
-        element: <TestTheme />,
-      },
+      { path: "/dialog", element: <SearchDialog /> },
     ],
   },
 ]);

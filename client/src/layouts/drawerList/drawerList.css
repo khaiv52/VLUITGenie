@@ -1,10 +1,12 @@
 .drawerList {
-  background-color: black;
+  background-color: var(--bg-dashboard);
   height: 100vh;
   padding: 10px;
-  color: white;
+  color: var(--text-color);
   max-width: 300px;
   overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
 
   .ChatList {
     .dashBoardLink {
@@ -24,7 +26,6 @@
 
   .list {
     .listMenu {
-      padding: 10px 7px;
       font-size: 14px;
       font-weight: 400;
     }
