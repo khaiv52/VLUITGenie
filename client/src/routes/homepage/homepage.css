@@ -1,9 +1,17 @@
 .homepage {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  /* height: 100%;
+  position: relative; */
+}
+
+.homepage .home-content {
+  flex: 1;
+  display: flex;
   gap: 100px;
-  height: 100%;
-  position: relative;
+  flex-direction: row;
+  align-items: center;
 }
 
 .left {
@@ -14,6 +22,7 @@
   justify-content: center;
   gap: 18px;
   text-align: center;
+  height: calc(100vh - 50px);
 
   h1 {
     font-size: 90px;
@@ -59,8 +68,9 @@
     align-items: center;
     background-color: var(--bg-bot);
     border-radius: 50px;
-    width: 80%;
-    height: 50%;
+    width: 100%;
+    max-width: 500px; /* Giới hạn tối đa */
+    aspect-ratio: 16 / 9; /* Giữ tỷ lệ hình vuông */
     position: relative;
 
     .bgContainer {
@@ -126,19 +136,15 @@
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  margin-top: 20px;
+  padding: 10px 40px;
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  gap: 10px;
-  padding: 10px 0;
-  background-color: #140e2d;
-  color: white;
-  font-size: 16px;
-  text-align: center;
+  align-items: center;
   z-index: 1;
+  gap: 20px;
 }
 
 @keyframes rotateOrbital {
@@ -171,11 +177,14 @@
 
 /* Mobile */
 @media screen and (max-width: 576px) {
-  .homepage {
+  .homepage .home-content {
     display: flex;
     flex-direction: column;
-    gap: 0;
     padding: 10px;
+    gap: 50px !important;
+  }
+  .homepage .footer {
+    margin-top: 50px;
   }
 
   .left,
@@ -212,19 +221,23 @@
 
 /* large devices */
 @media screen and (max-width: 992px) {
-  .homepage {
+  .homepage .home-content {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    gap: 0;
     padding: 10px;
+    gap: 70px;
     scrollbar-width: none;
+  }
+
+  .homepage .footer {
+    margin-top: 70px;
   }
 
   .right {
     width: 100%;
     .imgContainer {
+      height: 70%;
+      width: 70%;
       border-radius: 15px;
       .bgContainer {
         border-radius: 15px;

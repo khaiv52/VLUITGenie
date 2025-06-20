@@ -4,7 +4,7 @@ import NightlightIcon from "@mui/icons-material/Nightlight";
 import { Padding } from "@mui/icons-material";
 import "./toggleDarkMode.css";
 
-function ToggleDarkMode() {
+function ToggleDarkMode({ mobile }) {
   const [isDark, setIsDark] = useState(
     localStorage.getItem("theme") === "dark"
   );
@@ -22,12 +22,12 @@ function ToggleDarkMode() {
   return (
     <button
       onClick={() => setIsDark(!isDark)}
-      className="toggle-btn"
+      className= "toggle-btn"
       style={{ padding: "10px" }}
     >
       {isDark ? <BrightnessHighIcon /> : <NightlightIcon />}
     </button>
   );
-}   
+}
 
 export default ToggleDarkMode;

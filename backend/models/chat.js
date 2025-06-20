@@ -2,9 +2,15 @@ const mongoose = require("mongoose");
 
 const chatSchema = new mongoose.Schema(
   {
+    guest: {
+      type: Boolean,
+      default: false
+    },
     userId: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.guest;
+      },
     },
     history: [
       {

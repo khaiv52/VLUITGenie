@@ -29,6 +29,7 @@ function Upload({
   client,
   setShouldSendToServer,
   setIsTyping,
+  limitError,
 }) {
   const ikUploadRef = useRef(null);
   const onError = (err) => {
@@ -94,9 +95,18 @@ function Upload({
       />
 
       <label
-        onClick={() => ikUploadRef.current.click()} // Mở hộp thoại chọn file dựa trên nhãn
+        onClick={(e) => {
+          if (!isConnected || limitError) {
+            e.preventDefault(); // Ngăn hành động click
+            return;
+          }
+          ikUploadRef.current.click();
+        }} // Mở hộp thoại chọn file dựa trên nhãn
         aria-disabled={!isConnected}
-        style={isConnected ? {} : { background: "rgba(117, 117, 117, 0.4)" }}
+        style={{
+          cursor: !isConnected || limitError ? "not-allowed" : "pointer",
+          background: !isConnected ? "rgba(117, 117, 117, 0.4)" : undefined,
+        }}
       >
         <img src="/attachment.png" alt="" />
       </label>

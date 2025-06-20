@@ -16,14 +16,19 @@ import CloseIcon from "@mui/icons-material/Close";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenDialog } from "../../redux/actions/drawerActions";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ListSection from "../listSection/ListSection";
 import { isSameDay, now, today, yesterday } from "../../utils/dateFilters";
 import { getAllUserChats } from "../../redux/actions/chatActions";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { highlightMatch } from "../../utils/highlightMatch";
 
 export default function ChatSearchDialog() {
   const open = useSelector((state) => state.dialog.openDialog);
+  const { isGuest } = useSelector((state) => state.auth);
+  const { user, isSignedIn } = useUser();
 
   // Lấy ra toàn bộ danh sách chat
   const allChats = useSelector((state) => state.userChat.allChats);
@@ -43,8 +48,10 @@ export default function ChatSearchDialog() {
 
   // Chỉ fetch 1 lần khi component mount.
   useEffect(() => {
-    dispatch(getAllUserChats());
-  }, [dispatch]);
+    if (!isGuest && isSignedIn && user) {
+      dispatch(getAllUserChats());
+    }
+  }, [dispatch, isGuest, isSignedIn, user]);
 
   // Debounce keyword để tránh gọi API liên tục
   useEffect(() => {
@@ -82,27 +89,45 @@ export default function ChatSearchDialog() {
   console.log("searchResults", searchResults);
   console.log("isLoading", isLoading);
 
-  // Nếu có từ khóa người dùng nhập (debounceKeyword thì lấy ngược lại hiển thị toàn bộ danh sách chat)
-  const sourceChats = debounceKeyword ? searchResults : allChats;
-
   // Lấy các mục chat có ngày tạo là hôm nay
-  const todayItems = sourceChats.filter((item) =>
+  const todayItems = allChats.filter((item) =>
     isSameDay(item.createdAt, today)
   );
 
   // Lấy các mục chat có ngày tạo là hôm qua
-  const yesterdayItems = sourceChats.filter((item) =>
+  const yesterdayItems = allChats.filter((item) =>
     isSameDay(item.createdAt, yesterday)
   );
 
   // Lấy các mục chat có ngày tạo tính từ 7 ngày trước (ngoại trừ hôm nay và hôm qua)
-  const last7DaysItems = sourceChats.filter((item) => {
+  const last7DaysItems = allChats.filter((item) => {
     const date = new Date(item.createdAt);
     const diffDays = Math.floor(
       (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
     );
     return diffDays > 1 && diffDays <= 7;
   });
+
+  const navigate = useNavigate();
+
+  console.log("todayItems", todayItems);
+  console.log("yesterdayItems", yesterdayItems);
+  console.log("last7DaysItems", last7DaysItems);
+
+  // Nhóm kết quả theo _id
+  const groupedResults = searchResults.reduce((acc, item) => {
+    if (!acc[item._id]) {
+      acc[item._id] = {
+        title: item.title,
+        createdAt: item.createdAt,
+        texts: [],
+      };
+    }
+    if (item.text && item.text.trim() !== "") {
+      acc[item._id].texts.push(item.text);
+    }
+    return acc;
+  }, {});
 
   return (
     <Box>
@@ -171,211 +196,201 @@ export default function ChatSearchDialog() {
             },
           }}
         >
-          {/* <List
-            subheader={
-              <ListSubheader
-                disableSticky
-                sx={{
-                  bgcolor: "transparent",
-                  color: "var(--text-title-dialog-color)",
-                  fontSize: "var(--fs-super-small)",
-                  fontWeight: "var(--fw-medium)",
-                }}
-              >
-                Hôm nay
-              </ListSubheader>
-            }
-          >
-            {[
-              "Tạo mũi tên trắng",
-              "Tư vấn tuyển sinh 2",
-              "Test trong Visual Studio",
-            ].map((text) => (
-              <ListItem
-                button
-                key={text}
-                sx={{
-                  cursor: "pointer",
-                  ":hover": {
-                    backgroundColor: "var(--icon-hover-bg)",
-                    transition: "background-color 0.3s ease",
-
-                    "& .MuiListItemText-primary": {
-                      color: "var(--text-dialog-hover-color)",
-                    },
-
-                    "& .MuiListItemIcon-root": {
-                      color: "var(--icon-dialog-hover-color)",
-                    },
-                  },
-                  ":active": {
-                    backgroundColor: "var(--icon-active-bg)",
-                    transition: "background-color 0.3s ease",
-                  },
-                }}
-              >
-                <ListItemIcon
+          {debounceKeyword ? (
+            isLoading ? (
+              <Box sx={{ textAlign: "center", py: 2 }}>
+                <p>Đang tìm kiếm...</p>
+              </Box>
+            ) : searchResults.length === 0 ? (
+              <List>
+                <ListItem
                   sx={{
-                    color: "var(--icon-dialog-color)",
-                    fontWeight: "var(--fw-small)",
-                    fontSize: "var(--fs-medium)",
-                    minWidth: 40,
+                    justifyContent: "center",
+                    color: "var(--text-secondary-color)",
+                    fontStyle: "italic",
+                    pointerEvents: "none",
                   }}
                 >
-                  <ChatBubbleOutlineIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  slotProps={{
-                    primary: {
-                      color: "var(--text-dialog-color)",
-                      fontSize: "var(--fs-super-small)",
-                    },
+                  Không tìm thấy kết quả nào.
+                </ListItem>
+              </List>
+            ) : searchResults.length > 0 ? (
+              <List>
+                {Object.entries(groupedResults).map(([id, group]) =>
+                  group.texts.length === 0 ? (
+                    // Trường hợp chỉ có title, không có text
+                    <ListItem
+                      key={id}
+                      button
+                      onClick={() => {
+                        handleClose();
+                        navigate(`/dashboard/chats/${id}`);
+                        dispatch(setOpenDialog(false));
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                        ":hover": {
+                          backgroundColor: "var(--icon-hover-bg)",
+                          transition: "background-color 0.3s ease",
+                          "& .MuiListItemText-primary": {
+                            color: "var(--text-dialog-hover-color)",
+                          },
+                          "& .MuiListItemIcon-root": {
+                            color: "var(--icon-dialog-hover-color)",
+                          },
+                        },
+                        ":active": {
+                          backgroundColor: "var(--icon-active-bg)",
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{ color: "var(--icon-dialog-color)", minWidth: 40 }}
+                      >
+                        <ChatBubbleOutlineIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={highlightMatch(
+                          group.title || "Cuộc trò chuyện mới",
+                          debounceKeyword
+                        )}
+                      />
+                    </ListItem>
+                  ) : (
+                    // Trường hợp có nhiều đoạn text cho cùng một title
+                    <Fragment key={id}>
+                      <ListSubheader
+                        component="div"
+                        sx={{
+                          backgroundColor: "inherit",
+                          fontWeight: "bold",
+                          color: "var(--text-color)",
+                          fontSize: "var(--fs-small)",
+                          position: "static",
+                        }}
+                      >
+                        {group.title || "Cuộc trò chuyện mới"}
+                      </ListSubheader>
+                      {group.texts.map((text, index) => (
+                        <ListItem
+                          key={`${id}-${index}`}
+                          button
+                          onClick={() => {
+                            handleClose();
+                            navigate(`/dashboard/chats/${id}`);
+                            dispatch(setOpenDialog(false));
+                          }}
+                          sx={{
+                            cursor: "pointer",
+                            pl: 4,
+                            ":hover": {
+                              backgroundColor: "var(--icon-hover-bg)",
+                              transition: "background-color 0.3s ease",
+                              "& .MuiListItemText-primary": {
+                                color: "var(--text-dialog-hover-color)",
+                              },
+                              "& .MuiListItemIcon-root": {
+                                color: "var(--icon-dialog-hover-color)",
+                              },
+                            },
+                            ":active": {
+                              backgroundColor: "var(--icon-active-bg)",
+                            },
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              color: "var(--icon-dialog-color)",
+                              minWidth: 40,
+                            }}
+                          >
+                            <ChatBubbleOutlineIcon />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={highlightMatch(
+                              text.length > 100
+                                ? `${text.slice(0, 100)}...`
+                                : text,
+                              debounceKeyword
+                            )}
+                          />
+                        </ListItem>
+                      ))}
+                    </Fragment>
+                  )
+                )}
+              </List>
+            ) : (
+              <Box sx={{ textAlign: "center", py: 2 }}>
+                <p>Không có kết quả tìm kiếm.</p>
+              </Box>
+            )
+          ) : (
+            <>
+              <List>
+                <ListItem
+                  button
+                  onClick={() => {
+                    navigate("/dashboard/chats");
+                    dispatch(setOpenDialog(false));
                   }}
-                />
-              </ListItem>
-            ))}
-          </List>
-
-          <List
-            subheader={
-              <ListSubheader
-                disableSticky
-                sx={{
-                  bgcolor: "transparent",
-                  color: "var(--text-title-dialog-color)",
-                  fontSize: "var(--fs-super-small)",
-                  fontWeight: "var(--fw-medium)",
-                }}
-              >
-                Hôm qua
-              </ListSubheader>
-            }
-          >
-            {["Tạo màu shadow tương tự", "Tạo mũi tên trắng"].map((text) => (
-              <ListItem
-                button
-                key={text}
-                sx={{
-                  cursor: "pointer",
-                  ":hover": {
-                    backgroundColor: "var(--icon-hover-bg)",
-                    transition: "background-color 0.3s ease",
-
-                    "& .MuiListItemText-primary": {
-                      color: "var(--text-dialog-hover-color)",
-                    },
-
-                    "& .MuiListItemIcon-root": {
-                      color: "var(--icon-dialog-hover-color)",
-                    },
-                  },
-                  ":active": {
-                    backgroundColor: "var(--icon-active-bg)",
-                    transition: "background-color 0.3s ease",
-                  },
-                }}
-              >
-                <ListItemIcon
+                  selected={false}
                   sx={{
-                    color: "var(--icon-dialog-color)",
-                    fontWeight: "var(--fw-small)",
-                    fontSize: "var(--fs-medium)",
-                    minWidth: 40,
+                    cursor: "pointer",
+                    ":hover": {
+                      backgroundColor: "var(--icon-hover-bg)",
+                      transition: "background-color 0.3s ease",
+                      "& .MuiListItemText-primary": {
+                        color: "var(--text-dialog-hover-color)",
+                      },
+                      "& .MuiListItemIcon-root": {
+                        color: "var(--icon-dialog-hover-color)",
+                      },
+                    },
+                    ":active": {
+                      backgroundColor: "var(--icon-active-bg)",
+                    },
                   }}
                 >
-                  <ChatBubbleOutlineIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  slotProps={{
-                    primary: {
-                      color: "var(--text-dialog-color)",
-                      fontSize: "var(--fs-super-small)",
-                    },
-                  }}
-                />
-              </ListItem>
-            ))}
-          </List>
+                  <ListItemIcon
+                    sx={{
+                      color: "var(--icon-dialog-color)",
+                      fontWeight: "var(--fw-small)",
+                      fontSize: "var(--fs-medium)",
+                      minWidth: 40,
+                    }}
+                  >
+                    <ChatBubbleOutlineIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Tạo cuộc trò chuyện mới"
+                    slotProps={{
+                      primary: {
+                        color: "var(--text-dialog-color)",
+                        fontSize: "var(--fs-super-small)",
+                      },
+                    }}
+                  />
+                </ListItem>
+              </List>
 
-          <List
-            subheader={
-              <ListSubheader
-                disableSticky
-                sx={{
-                  bgcolor: "transparent",
-                  color: "var(--text-title-dialog-color)",
-                  fontSize: "var(--fs-super-small)",
-                  fontWeight: "var(--fw-medium)",
-                }}
-              >
-                7 ngày trước đó
-              </ListSubheader>
-            }
-          >
-            {["Tạo màu shadow tương tự", "Tạo mũi tên trắng"].map((text) => (
-              <ListItem
-                button
-                key={text}
-                sx={{
-                  cursor: "pointer",
-                  ":hover": {
-                    backgroundColor: "var(--icon-hover-bg)",
-                    transition: "background-color 0.3s ease",
-
-                    "& .MuiListItemText-primary": {
-                      color: "var(--text-dialog-hover-color)",
-                    },
-
-                    "& .MuiListItemIcon-root": {
-                      color: "var(--icon-dialog-hover-color)",
-                    },
-                  },
-                  ":active": {
-                    backgroundColor: "var(--icon-active-bg)",
-                    transition: "background-color 0.3s ease",
-                  },
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    color: "var(--icon-dialog-color)",
-                    fontWeight: "var(--fw-small)",
-                    fontSize: "var(--fs-medium)",
-                    minWidth: 40,
-                  }}
-                >
-                  <ChatBubbleOutlineIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  slotProps={{
-                    primary: {
-                      color: "var(--text-dialog-color)",
-                      fontSize: "var(--fs-super-small)",
-                    },
-                  }}
-                />
-              </ListItem>
-            ))}
-          </List> */}
-
-          <ListSection
-            title="Hôm nay"
-            items={todayItems}
-            onItemClick={() => dispatch(setOpenDialog(false))}
-          />
-          <ListSection
-            title="Hôm qua"
-            items={yesterdayItems}
-            onItemClick={() => dispatch(setOpenDialog(false))}
-          />
-          <ListSection
-            title="7 ngày trước đó"
-            items={last7DaysItems}
-            onItemClick={() => dispatch(setOpenDialog(false))}
-          />
+              <ListSection
+                title="Hôm nay"
+                items={todayItems}
+                onItemClick={() => dispatch(setOpenDialog(false))}
+              />
+              <ListSection
+                title="Hôm qua"
+                items={yesterdayItems}
+                onItemClick={() => dispatch(setOpenDialog(false))}
+              />
+              <ListSection
+                title="7 ngày trước đó"
+                items={last7DaysItems}
+                onItemClick={() => dispatch(setOpenDialog(false))}
+              />
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </Box>

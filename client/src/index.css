@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 * {
-  padding: 0px;
-  margin: 0;
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -36,18 +36,16 @@ a {
   --bg-bot: #f0f0f4; /* Nền bot, có thể là màu nhấn nhẹ hơn nền chính */
   --bg-chat-animation: #9e8fcf; /* Nền chat animation, có thể là màu nhấn nhẹ hơn nền chính */
   --bg-dashboard: #faf6f6; /* Nền dashboard, có thể là màu nhấn nhẹ hơn nền chính */
+  --bg-footer-tail: #e9e3e3; /* Màu nền footer trong chế độ sáng */
 
   --text-color: #1c1c1e; /* Màu chữ tối rõ ràng */
-  --divider-color: #d0d0d0; /* Đường phân cách trung tính */
-  --chat-active-bg: #e5e5f0; /* Màu nhấn nền nhẹ nhàng, tối hơn secondary để tạo phân biệt */
-  --scroll-thumb: rgba(0, 0, 0, 0.1);
-  --scroll-thumb-hover: rgba(0, 0, 0, 0.2);
+  --chat-active-bg: #e6e6ef; /* Màu nhấn nền nhẹ nhàng, tối hơn secondary để tạo phân biệt */
 
   --link-bg: #f0f0f4; /* Nền link nhẹ */
-  --link-hover-bg: #e5e5f0; /* Nền hover nhẹ */
+  --link-hover-bg: #ebebf2; /* Nền hover nhẹ */
   --link-color: #1a73e8; /* Màu link nổi bật */
   --link-hover-color: #1558b0; /* Màu hover đậm hơn */
-  --link-active-bg: #eaeaf4; /* Nền link khi active */
+  --link-active-bg: #dadae5; /* Nền link khi active */
 
   /* Màu accent cho theme sáng */
   --text-accent-color: #2f80ed;
@@ -62,6 +60,9 @@ a {
   --icon-active-bg: #bfd2ff;
   --icon-active-color: #1a73e8;
 
+  --icon-stats-color: #595959; /* Màu icon thống kê nổi bật */
+  --text-label-color: #3970c8; /* Màu cho light mode (xám đậm) */
+
   /* Màu cho input */
   --text-input-color: #1c1c1e; /* Màu chữ trong input */
 
@@ -74,20 +75,19 @@ a {
 
   /* Màu cho bảng dialog search */
   --text-title-dialog-color: #4e4e54; /* Màu chữ tiêu đề trong dialog */
-  
+
   --text-dialog-color: #59595e; /* Màu chữ trong dialog */
   --text-dialog-hover-color: #1a73e8; /* Màu chữ hover trong dialog */
   --text-dialog-active-color: #1a73e8; /* Màu chữ active trong dialog */
-  
+
   --icon-dialog-color: #88888e; /* Màu icon trong dialog */
   --icon-dialog-hover-color: #1a73e8; /* Màu icon hover trong dialog */
   --icon-dialog-active-color: #1a73e8; /* Màu icon active trong dialog */
 
-  --divider-color: #eeeeee; /* Đường phân cách trung tính */
+  --divider-color: rgb(118, 118, 118); /* Đường phân cách trung tính */
 
-  --scrollbar-track-color: #fbf9f9;
-  --scrollbar-thumb-color: #ababab;
-  --scrollbar-thumb-hover-color: #5c5c7a;
+  --scroll-thumb: rgba(0, 0, 0, 0.1);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.2);
 
   --fs-super-small: 0.8rem; /* 13px */
   --fs-small: 0.875rem; /* 14px */
@@ -98,6 +98,9 @@ a {
   --fw-medium: 500; /* Độ đậm chữ trung bình */
   --fw-large: 600; /* Độ đậm chữ lớn */
   --fw-small: 400; /* Độ đậm chữ nhỏ */
+
+  --header-height: 82px; /* bao gồm cả padding */
+  --invert-icon: invert(0) hue-rotate(0deg); /* Đảo ngược màu sắc icon */
 }
 
 .dark-mode {
@@ -108,12 +111,10 @@ a {
   --bg-chat-animation: #2c2937;
   /* --bg-dashboard: #292a2f; Nền dashboard, có thể là màu nhấn nhẹ hơn nền chính */
   --bg-dashboard: #29292f;
+  --bg-footer-tail: #141025; /* Màu nền footer trong chế độ tối */
 
   --text-color: #ffffff;
-  --divider-color: #ddd;
   --chat-active-bg: #2c2937;
-  --scroll-thumb: rgba(255, 255, 255, 0.2);
-  --scroll-thumb-hover: rgba(164, 125, 125, 0.4);
 
   --link-bg: #0c0c16;
   --link-hover-bg: #1a1821;
@@ -130,6 +131,11 @@ a {
   --icon-active-bg: #445069;
   --icon-active-color: #7ab7ff;
 
+  --icon-stats-color: #ffffff; /* Màu icon thống kê nổi bật */
+
+  --icon-stats-color: #595959; /* Màu icon thống kê nổi bật */
+  --text-label-color: #4184f0; /* Màu cho light mode (xám đậm) */
+
   --btn-bg: #6d6b77; /* Màu button nền nổi bật */
   --btn-hover-bg: #9c9aa5; /* hover nâng cao độ nổi bật hơn */
 
@@ -140,20 +146,22 @@ a {
   /* Màu cho bảng dialog search - cập nhật để đồng bộ dark mode */
   --text-title-dialog-color: #e0e0e0; /* Màu tiêu đề sáng hơn */
   --text-dialog-color: #cccccc; /* Màu chữ dialog nhẹ sáng hơn */
-  
+
   --text-dialog-hover-color: #4f4f4f; /* Màu chữ hover trong dialog */
   --text-dialog-active-color: #59595e; /* Màu chữ active trong dialog */
   --text-dialog-hover-color: #7ab7ff; /* Nền chữ active trong dialog */
-  
+
   --icon-dialog-color: #cccccc; /* Màu icon trung tính hơn và rõ nét */
   --icon-dialog-active-color: #7ab7ff; /* Màu icon active trong dialog */
   --icon-dialog-hover-color: #7ab7ff; /* Màu icon hover trong dialog */
 
   --divider-color: #505050; /* Đường phân cách tối nhưng rõ */
 
-  --scrollbar-track-color: #2e2e31; /* Màu nền thanh cuộn phù hợp dark */
-  --scrollbar-thumb-color: #444; /* Thanh cuộn màu trung bình */
-  --scrollbar-thumb-hover-color: #666; /* Hover rõ hơn nhưng không quá sáng */
+  --scroll-thumb: rgba(255, 255, 255, 0.2);
+  --scroll-thumb-hover: rgba(209, 209, 209, 0.4);
+
+  --invert-icon: invert(1) hue-rotate(180deg); /* Đảo ngược màu sắc icon */
+  
 }
 
 .dark-mode .dashboardPage .formContainer {

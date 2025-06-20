@@ -1,16 +1,18 @@
 .rootLayout {
   padding: 16px 64px;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
-  overflow-x: hidden;
+
+  .content-container {
+    height: 100%;
+  }
 }
 
 header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  /* padding: 16px 64px; */
 
   .logo {
     display: flex;
@@ -31,6 +33,7 @@ header {
 .user {
   display: flex;
   align-items: center;
+  gap: 6px;
 
   .signInButton {
     display: inline-block;
@@ -96,12 +99,45 @@ main {
 }
 
 .desktop-only {
-  display: block;
+  display: flex;
+  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+
+  /* Nút toggle */
+  .toggle-menu {
+    z-index: 10;
+    color: var(--icon-color);
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .toggle-menu:hover {
+    background-color: var(--icon-hover-bg);
+    color: var(--icon-hover-color);
+    border: none;
+  }
 }
 
 @media screen and (max-width: 1200px) {
   .rootLayout {
     padding: 16px 28px;
+  }
+
+  header {
+    .logo {
+      font-size: 14px !important;
+    }
+
+    .user {
+      .signInButton {
+        font-size: 14px !important;
+      }
+    }
   }
 }
 
@@ -120,24 +156,12 @@ main {
         font-size: 14px !important;
       }
     }
-  }
+  } 
 }
 
 @media screen and (max-width: 768px) {
   .rootLayout {
     padding: 16px 28px;
-  }
-
-  header {
-    .logo {
-      font-size: 14px !important;
-    }
-
-    .user {
-      .signInButton {
-        font-size: 14px !important;
-      }
-    }
   }
 
   .group-control {
@@ -148,15 +172,17 @@ main {
       display: flex;
       align-items: center;
     }
-    
+
     .desktop-only {
       display: none;
     }
   }
+
+  
 }
 
 @media screen and (max-width: 576px) {
   .rootLayout {
-    padding: 16px 28px;
+    /* padding: 16px 28px; */
   }
 }

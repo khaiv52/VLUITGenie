@@ -1,18 +1,75 @@
 .dashboardLayout {
   display: flex;
-  padding-top: 20px;
-  height: 100%;
+  height: calc(100vh - var(--header-height));
+  position: relative;
   overflow-x: hidden;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+
+  .menu-wrapper {
+    position: relative;
+    height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .menu-wrapper::-webkit-scrollbar {
+    width: 6px; /* Độ rộng thanh cuộn */
+  }
+
+  .menu-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .menu-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-thumb);
+    border-radius: 10px;
+  }
+
+  .menu-wrapper:hover::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-thumb-hover);
+  }
+
+  .menu-header {
+    width: 100%;
+    height: var(--header-height);
+    background-color: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    z-index: 1000;
+  }
 
   .menu {
     flex: 1;
     background-color: var(--bg-primary);
-    margin-right: 50px;
+    margin-right: 20px;
+    padding: 16px 0px 0px 64px;
+    transition: width 0.3s ease;
+    width: 100%;
   }
+
+  .menu.open {
+    width: 300px;
+    padding: 16px 0px 0px 0px;
+    overflow: hidden;
+  }
+
+  /* Khi đóng menu */
+  .menu.closed {
+    width: 60px;
+    padding: 0;
+    overflow: hidden;
+    margin-right: 0;
+  }
+
   .content {
+    height: 100%;
     flex: 4;
     background-color: var(--bg-secondary);
     padding: 20px 30px;
+    overflow: hidden;
   }
 }
 
@@ -23,7 +80,6 @@
       width: 100%;
       padding: 0px;
       .wrapper {
-
       }
     }
   }
@@ -40,9 +96,23 @@
       }
     }
   }
+
+  .menu-wrapper {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 992px) {
+  .dashboardLayout {
+    .content {
+      padding: 10px 20px;
+      .wrapper {
+        .chat {
+          width: 100% !important;
+        }
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 1200px) {

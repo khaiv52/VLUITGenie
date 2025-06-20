@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema({
   username: { type: String },
   firstName: { type: String },
   lastName: { type: String },
-  fullName: { type: String },
+  // fullName: { type: String },
   email: { type: String },
   imageUrl: { type: String },
   hasImage: { type: Boolean },

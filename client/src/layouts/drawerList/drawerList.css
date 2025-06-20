@@ -8,6 +8,10 @@
   position: relative;
   box-sizing: border-box;
 
+  .item-group-header {
+    padding: 0 10px;
+  }
+
   .ChatList {
     .dashBoardLink {
       border-radius: 6px;

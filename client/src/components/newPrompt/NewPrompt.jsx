@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
-import "./NewPrompt.css";
-import Upload from "../../components/upload/Upload.jsx";
-import { IKImage } from "imagekitio-react";
 import { getClient } from "@botpress/webchat";
-import Markdown from "react-markdown";
+import { useAuth } from "@clerk/clerk-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import Upload from "../../components/upload/Upload.jsx";
+import { getGuestChatCount } from "../../redux/actions/authActions.js";
+import ChatLimiter from "../chatLimiter/ChatLimiter.jsx";
+import "./NewPrompt.css";
 
 function NewPrompt({ endRef, data, setIsTyping }) {
   // Xử lý nhập / gửi chat
@@ -14,9 +17,32 @@ function NewPrompt({ endRef, data, setIsTyping }) {
   const [latestUserMessage, setLatestUserMessage] = useState(""); // lấy đầu vào mới nhất nhập từ người dùng
   const [isConnected, setIsConnected] = useState(false);
   const [client, setClient] = useState(null);
+  const [limitError, setLimitError] = useState(false);
+
+  const path = useLocation().pathname;
+  const chatId = path.split("/").pop(); // Lấy chatId Từ URL
+
   // Biến tăng dòng cho textarea
   const [rows, setRows] = useState(1);
   const clientId = import.meta.env.VITE_CLIENT_ID;
+
+  // Biến kiểm tra trạng thái đăng nhập
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Giới hạn chat cho guest, ví dụ max 5 tin nhắn
+  const guestChatLimit = 5;
+  // Thêm state lưu số chat count hiện tại của guest
+  const { guestChatCount } = useSelector((state) => state.auth);
+  console.log(guestChatCount);
+
+  // Khi là guest thì gọi action lấy số chat count
+  useEffect(() => {
+    if (!isSignedIn && data?._id) {
+      dispatch(getGuestChatCount(data._id));
+    }
+  }, [isSignedIn, data?._id, dispatch]);
 
   const [img, setImg] = useState({
     isLoading: false,
@@ -24,6 +50,25 @@ function NewPrompt({ endRef, data, setIsTyping }) {
     dbData: {},
     aiData: {},
   });
+
+  // Hàm reset chiều cao và đặt tự chiều cao theo nội dung của textarea (vùng nhập)
+  const autoResizeTextarea = (element) => {
+    if (element) {
+      element.style.height = "auto"; // Reset trước
+      element.style.height = element.scrollHeight + "px"; // Đặt chiều cao theo nội dung
+    }
+  };
+
+  // Theo dõi phản hồi bot -> kích hoạt PUT request khi có phản hồi từ bot
+  const handleChange = (event) => {
+    const value = event.target.value;
+    setInputMessage(value);
+
+    const lineBreaks = value.split("\n").length;
+    setRows(Math.min(7, Math.max(1, lineBreaks))); // Giới hạn từ 1 đến 7 dòng
+
+    autoResizeTextarea(event.target);
+  };
 
   useEffect(() => {
     if (endRef?.current) {
@@ -33,10 +78,54 @@ function NewPrompt({ endRef, data, setIsTyping }) {
 
   const queryClient = useQueryClient();
 
+  // reset khi input rỗng
+  useEffect(() => {
+    if (inputMessage.trim() === "") {
+      setRows(1); // Reset về 1 dòng
+      const textarea = document.querySelector("textarea");
+      if (textarea) {
+        textarea.style.height = "auto";
+      }
+    }
+  }, [inputMessage]);
+
+  const handleKeyDown = (event) => {
+    if (!isConnected) return; // Không cho nhập khi chưa kết nối
+
+    const textarea = event.target;
+
+    if (event.key === "Enter") {
+      if (event.shiftKey) {
+        event.preventDefault(); // Chặn hành vi mặc định để tránh xuống 2 dòng
+        setInputMessage((prev) => prev + "\n"); // Xuống dòng đúng 1 lần
+        textarea.style.height = textarea.scrollHeight + "px";
+      } else {
+        event.preventDefault(); // Chặn hành vi xuống dòng mặc định
+
+        // nếu là guest và vượt limit
+        if (!isSignedIn && guestChatCount >= guestChatLimit) {
+          setLimitError(true);
+          setIsTyping(false);
+          return;
+        }
+
+        sendMessage(inputMessage, false);
+        setIsTyping(true);
+        textarea.style.height = "auto"; // reset chiều cao
+      }
+    }
+  };
+
   // useEffect(() => {
   //   console.log(messages);
   //   console.log(img);
   // }, [messages]);
+
+  const endpoint = isSignedIn
+    ? `${import.meta.env.VITE_API_URL}/api/chats/${data._id}`
+    : `${import.meta.env.VITE_API_URL}/api/chats/guest/${data._id}`;
+
+  // console.log(endpoint);
 
   const mutation = useMutation({
     mutationFn: ({ inputMessage, botResponse, image }) => {
@@ -46,45 +135,56 @@ function NewPrompt({ endRef, data, setIsTyping }) {
           : undefined;
 
       // Log kiểm tra sending của client
-      console.log(
-        "Sending PUT request to:",
-        `${import.meta.env.VITE_API_URL}/api/chats/${data._id}`
-      );
+      console.log("Sending PUT request to: ", endpoint);
       console.log("Request body:", {
         inputMessage: inputMessage.length ? inputMessage : undefined,
         botResponse: botResponse.length ? botResponse : undefined,
         image_url: image?.dbData?.filePath || undefined, // optional
       });
 
-      return fetch(`${import.meta.env.VITE_API_URL}/api/chats/${data._id}`, {
+      return fetch(endpoint, {
         method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        // Gửi dữ liệu dưới dạng JSON
-
         body: JSON.stringify({
           inputMessage: inputMessage.length ? inputMessage : undefined,
-          botResponse: botResponse.length ? botResponse : undefined, // Phản hồi từ chatbot
+          botResponse: botResponse.length ? botResponse : undefined,
           image_url: imagePath,
         }),
-      }).then((res) => res.json());
+      }).then(async (res) => {
+        if (!res.ok) {
+          const error = await res.json();
+          throw { status: res.status, message: error.message };
+        }
+        return res.json();
+      });
     },
     // server response trả về id của chat mới tạo
-    onSuccess: () => {
-      queryClient
-        .invalidateQueries({ queryKey: ["chat", data._id] })
-        .then(() => {
-          setInputMessage(""); // Reset dữ liệu người dùng nhập (Input Form)
-          setLatestUserMessage(""); // Reset lời nhắn của người dùng
-          // tránh trường hợp bị lỗi khi gửi ảnh mà vẫn còn input message đã gửi là text trước đó
-          setMessages([]); // Reset messages
-          setImg({ isLoading: false, error: "", dbData: {}, aiData: {} }); // Reset ảnh
-        });
+    onSuccess: (data) => {
+      console.log("Success Data: ", data);
+      queryClient.invalidateQueries({ queryKey: ["chat", chatId] }).then(() => {
+        setInputMessage(""); // Reset dữ liệu người dùng nhập (Input Form)
+        setLatestUserMessage(""); // Reset lời nhắn của người dùng
+        // tránh trường hợp bị lỗi khi gửi ảnh mà vẫn còn input message đã gửi là text trước đó
+        setMessages([]); // Reset messages
+        setImg({ isLoading: false, error: "", dbData: {}, aiData: {} }); // Reset ảnh
+        setIsTyping(false);
+        setLimitError(false); // reset nếu thành công
+
+        if (!isSignedIn && data.userMessageCount !== undefined) {
+          dispatch(getGuestChatCount(data._id));
+        }
+      });
     },
     onError: (error) => {
-      console.error("Error updating chat:", error);
+      if (error?.status === 403) {
+        setLimitError(true); // chỉ set boolean true
+        setIsTyping(false);
+      } else {
+        console.error("Đã xảy ra lỗi:", error);
+      }
     },
   });
 
@@ -109,6 +209,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
     connectClient();
   }, []);
 
+  // Hàm sendMessage cho botpress (ban đầu sẽ chạy useEffect kiểm tra initial message)
   const sendMessage = async (message, isInitialMessage) => {
     if (!message.trim()) return;
 
@@ -117,13 +218,21 @@ function NewPrompt({ endRef, data, setIsTyping }) {
       return;
     }
 
+    // Kiểm tra limit cho guest
+    if (!isSignedIn && guestChatCount >= guestChatLimit) {
+      setLimitError(true);
+      setIsTyping(false);
+      return;
+    }
+
     try {
       console.log("Sending message:", message); // Log tin nhắn trước khi gửi
       if (typeof message === "string") {
+        // Gửi message lên botpress xử lý
         await client.sendMessage({ type: "text", text: message });
         setMessages((prevMessages) => [
           ...prevMessages,
-          { payload: { block: { text: message } }, authorId: "user" },
+          { payload: { block: { text: message } }, authorId: "user" }, // Lưu đối tượng giống dạng object từ Botpress trả về
         ]);
 
         setShouldSendToServer(true); // flag để kích hoạt mutation trong useEffect
@@ -138,15 +247,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
     }
   };
 
-  // Theo dõi phản hồi bot -> kích hoạt PUT request khi có phản hồi từ bot
-
-  const handleChange = (event) => {
-    setInputMessage(event.target.value);
-
-    const lineBreaks = event.target.value.split("\n").length;
-    setRows(Math.min(7, Math.max(1, lineBreaks))); // Giới hạn từ 1 đến 7 dòng
-  };
-
+  // Chạy đầu tiên
   useEffect(() => {
     console.log("useEffect running with:", {
       shouldSendToServer,
@@ -186,45 +287,20 @@ function NewPrompt({ endRef, data, setIsTyping }) {
     const textarea = e.target;
 
     if (textarea) {
-      textarea.style.height = "auto";
+      textarea.style.height = "auto"; // reset chiều cao của textarea khi message (input) đã được gửi
     }
   };
-
-  const handleKeyDown = (event) => {
-    if (!isConnected) return; // Không cho nhập khi chưa kết nối
-
-    const textarea = event.target;
-
-    if (event.key === "Enter") {
-      if (event.shiftKey) {
-        event.preventDefault(); // Chặn hành vi mặc định để tránh xuống 2 dòng
-        setInputMessage((prev) => prev + "\n"); // Xuống dòng đúng 1 lần
-        textarea.style.height = textarea.scrollHeight + "px";
-      } else {
-        event.preventDefault(); // Chặn hành vi xuống dòng mặc định
-
-        sendMessage(inputMessage, false);
-        setIsTyping(true);
-        textarea.style.height = "auto"; // reset chiều cao
-      }
-    }
-  };
-
-  // reset khi input rỗng
-  useEffect(() => {
-    if (inputMessage.trim() === "") {
-      setRows(1); // Reset về 1 dòng
-      const textarea = document.querySelector("textarea");
-      if (textarea) {
-        textarea.style.height = "auto";
-      }
-    }
-  }, [inputMessage]);
 
   // Kiểm tra nếu trạng thái đã được lưu trong localStorage
   const hassentMessage = localStorage.getItem(
     `hasSentInitialMessage_${data?._id}`
   );
+
+  const handleNewChat = () => {
+    navigate("/dashboard/chats/");
+    setLimitError(false);
+  };
+
   useEffect(() => {
     // Log dữ liệu data để kiểm tra xem nó đã có giá trị hợp lệ chưa
     console.log("data:", data);
@@ -236,9 +312,9 @@ function NewPrompt({ endRef, data, setIsTyping }) {
       client &&
       data?.history?.length > 0 &&
       data.history.length < 3 && // Chỉ gửi nếu lịch sử có 2 mục hoặc ít hơn
-      data.history[0].parts?.[0]?.text
+      data.history[0].parts?.[0]?.text // kiểm tra tin hấn ban đầu
     ) {
-      const inputMessage = data.history[0].parts[0].text;
+      const inputMessage = data.history[0].parts[0].text; // lấy tin nhắn ban đầu (từ người dùng trong CSDL MongoDB)
       const isInitialMessage = data?.history?.length == 1;
       console.log("Sending initial message:", inputMessage);
 
@@ -253,33 +329,17 @@ function NewPrompt({ endRef, data, setIsTyping }) {
 
   return (
     <>
-      {/* Người dùng tương tác chat, nội dung mới dược hiển thị ở đây */}
-      {/* {messages.map((msg, index) => {
-        const isUser = msg?.authorId === "user";
-        const hasImage = msg?.payload?.block?.img_url;
-        const messageText =
-          msg.payload?.block?.text || msg.payload?.blocks?.[0]?.block?.text;
-
-        if (hasImage) return null; // Nếu có ảnh, không hiển thị gì cảz
-
-        return (
-          <div key={index} className={isUser ? "message user" : "message"}>
-            <Markdown>{messageText || ""}</Markdown>
-          </div>
-        );
-      })} */}
-
-      {/* Hiển thị ảnh */}
-      {/* {img.isLoading && <div className="">Đang tải...</div>}
-      {img.dbData?.filePath && (
-        <IKImage
-          urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
-          path={img.dbData?.filePath}
-          width="380"
-          transformation={[{ width: "380", height: "auto" }]}
-        />
-      )} */}
       <div className="endChat" ref={endRef}>
+        {limitError && !isSignedIn && (
+          <ChatLimiter
+            maxCount={guestChatLimit}
+            currentCount={guestChatCount}
+            onSend={() => {
+              handleNewChat();
+            }}
+            disabled={false}
+          />
+        )}
         <div
           className="newPrompt"
           style={{ marginTop: rows === 1 ? "40px" : `${rows * 30}px` }}
@@ -291,7 +351,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
                 name="text"
                 placeholder="Hỏi bất kỳ điều gì..."
                 onKeyDown={handleKeyDown}
-                disabled={!isConnected}
+                disabled={!isConnected || limitError}
                 onChange={handleChange}
                 value={inputMessage}
                 rows={rows}
@@ -303,6 +363,7 @@ function NewPrompt({ endRef, data, setIsTyping }) {
                 setMessages={setMessages}
                 setIsTyping={setIsTyping}
                 isConnected={isConnected}
+                limitError={limitError}
                 client={client}
                 data={data}
                 setShouldSendToServer={setShouldSendToServer}
@@ -312,16 +373,20 @@ function NewPrompt({ endRef, data, setIsTyping }) {
                 type="file"
                 multiple={false}
                 hidden
-                disabled={!isConnected}
+                disabled={!isConnected || limitError}
               ></input>
               <button
                 type="submit"
-                disabled={!isConnected}
-                style={
-                  isConnected ? {} : { background: "rgba(117, 117, 117, 0.4)" }
-                }
+                disabled={!isConnected || limitError || !inputMessage.trim()}
+                style={{
+                  cursor:
+                    !isConnected || limitError || !inputMessage.trim()
+                      ? "not-allowed"
+                      : "pointer",
+                  opacity: !isConnected || limitError ? 0.6 : 1,
+                }}
               >
-                <img className="arrow_image" src="/arrow.png" alt=""></img>
+                <img className="arrow_image" src="/arrow.png" alt="" />
               </button>
             </div>
           </form>

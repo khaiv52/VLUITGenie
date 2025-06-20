@@ -1,0 +1,36 @@
+.stat-card {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-dashboard);
+  color: var(--text-color);
+  box-shadow: var(--box-shadow);
+  border-radius: 0.5rem;
+  min-height: 120px;
+}
+
+.stat-card .icon {
+  margin-right: 12px; /* tạo khoảng cách giữa icon và nội dung */
+  flex-shrink: 0;
+}
+
+.stat-card dl {
+  margin: 0;
+  flex-grow: 1;
+  text-align: end;
+}
+
+.stat-card dd {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0;
+}
+
+.stat-card dt {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}

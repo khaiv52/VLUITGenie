@@ -65,7 +65,7 @@
       position: absolute;
       background-color: transparent;
       color: white;
-      bottom: 20px;
+      bottom: 150px;
       right: 20px;
       width: 40px;
       height: 40px;
@@ -80,7 +80,7 @@
       visibility: hidden;
       transform: translateY(20px); /* Đặt trạng thái ban đầu */
       transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-      
+
       img {
         width: 20px;
         height: 20px;
